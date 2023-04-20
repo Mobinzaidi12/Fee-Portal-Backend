@@ -10,10 +10,4 @@ app.use(cors());
 
 app.use("/api", appRouter);
 
-app.listen(5000, (error) => {
-  if (error) {
-    console.log(error);
-  } else {
-    console.log("server is runing");
-  }
-});
+app.listen(4000);
