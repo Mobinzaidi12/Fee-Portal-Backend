@@ -10,4 +10,12 @@ app.use(cors());
 
 app.use("/api", appRouter);
 
-app.listen(4000);
+const server = app.listen(5000);
+
+process.on("uncaughtException", () => {
+  server.close();
+});
+
+process.on("SIGTERM", () => {
+  server.close();
+});
