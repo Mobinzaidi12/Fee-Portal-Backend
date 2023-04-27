@@ -17,7 +17,7 @@ const registerUser = async (req, res) => {
     delete user.password;
     jwt.sign({ user }, jwtKey, { expiresIn: "2h" }, (error, token) => {
       if (error) {
-        req.json({ status: false, message: "user not found" });
+        res.json({ status: false, message: "user not found" });
       } else {
         res.send({ user, auth: token });
       }
@@ -27,4 +27,28 @@ const registerUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser };
+const loginUser = async (req, res) => {
+  const { userName, password } = req.body;
+
+  if (!userName || !password) {
+    return res.json({
+      status: false,
+      message: "please provide username or password",
+    });
+  }
+
+  let user = await User.findOne({ userName, password }).select("-password");
+
+  if (!user) {
+    return res.json({ status: false, message: "user not found" });
+  }
+
+  jwt.sign({ user }, jwtKey, { expiresIn: "2hr" }, (error, token) => {
+    if (error) {
+      return res.json({ status: false, message: "user not found" });
+    }
+    return res.json({ status: true, user, auth: token });
+  });
+};
+
+module.exports = { registerUser, loginUser };
