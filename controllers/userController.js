@@ -28,27 +28,31 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  const { userName, password } = req.body;
+  try {
+    const { userName, password } = req.body;
 
-  if (!userName || !password) {
-    return res.json({
-      status: false,
-      message: "please provide username or password",
-    });
-  }
+    if (!userName || !password) {
+      return res.json({
+        status: false,
+        message: "please provide username or password",
+      });
+    }
 
-  let user = await User.findOne({ userName, password }).select("-password");
+    let user = await User.findOne({ userName, password }).select("-password");
 
-  if (!user) {
-    return res.json({ status: false, message: "user not found" });
-  }
-
-  jwt.sign({ user }, jwtKey, { expiresIn: "2hr" }, (error, token) => {
-    if (error) {
+    if (!user) {
       return res.json({ status: false, message: "user not found" });
     }
-    return res.json({ status: true, user, auth: token });
-  });
+
+    jwt.sign({ user }, jwtKey, { expiresIn: "2hr" }, (error, token) => {
+      if (error) {
+        return res.json({ status: false, message: "user not found" });
+      }
+      return res.json({ status: true, user, auth: token });
+    });
+  } catch (error) {
+    res.status(500).send({ status: false, message: error.message });
+  }
 };
 
 module.exports = { registerUser, loginUser };
