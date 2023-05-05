@@ -7,11 +7,12 @@ const {
   updateStudentData,
   searchStudent,
 } = require("../controllers/studentController");
+const authMiddleware = require("../middleware/auth");
 const studentRoute = Router();
 
-studentRoute.post("/add-student", addStudent);
+studentRoute.use(authMiddleware);
 
-studentRoute.get("/student-data", getStudentData);
+studentRoute.route("/").post(addStudent).get(getStudentData);
 
 studentRoute
   .route("/:id")
